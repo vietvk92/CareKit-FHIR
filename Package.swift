@@ -18,16 +18,8 @@ let package = Package(
             name: "CareKitStore",
             targets: ["CareKitStore"]),
 
-        .library(
-            name: "CareKitFHIR",
-            targets: ["CareKitFHIR"]),
-
     ],
     dependencies: [
-        .package(
-            url: "https://github.com/apple/FHIRModels.git",
-            exact: Version(0, 5, 0)
-        ),
         .package(
             url: "https://github.com/apple/swift-async-algorithms",
             exact: Version(0, 1, 0)
@@ -55,18 +47,6 @@ let package = Package(
             resources: [
                 .process("CoreData/Migrations/2_0To2_1/2.0_2.1_Mapping.xcmappingmodel")
             ]),
-
-        .target(
-            name: "CareKitFHIR",
-            dependencies: [
-                "CareKitStore",
-                .product(name: "ModelsR4", package: "FHIRModels"),
-                .product(name: "ModelsR5", package: "FHIRModels"),
-                .product(name: "ModelsDSTU2", package: "FHIRModels")
-            ],
-            path: "CareKitFHIR/CareKitFHIR",
-            exclude: ["Info.plist"]),
-
         .testTarget(
             name: "CareKitStoreTests",
             dependencies: ["CareKitStore"],
@@ -81,12 +61,6 @@ let package = Package(
             dependencies: ["CareKitUI"],
             path: "CareKitUI/CareKitUITests",
             exclude: ["Info.plist", "CareKitUI.xctestplan"]),
-
-        .testTarget(
-            name: "CareKitFHIRTests",
-            dependencies: ["CareKitFHIR"],
-            path: "CareKitFHIR/CareKitFHIRTests",
-            exclude: ["Info.plist", "CareKitFHIR.xctestplan"]),
 
         .testTarget(
             name: "CareKitTests",
