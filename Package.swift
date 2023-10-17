@@ -61,6 +61,7 @@ let package = Package(
             dependencies: [
                 "CareKitStore",
                 .product(name: "ModelsR4", package: "FHIRModels"),
+                .product(name: "ModelsR5", package: "FHIRModels"),
                 .product(name: "ModelsDSTU2", package: "FHIRModels")
             ],
             path: "CareKitFHIR/CareKitFHIR",
