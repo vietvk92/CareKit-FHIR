@@ -33,11 +33,11 @@ import Foundation
 
 extension CareStoreFetchedResult where Result == OCKAnyEvent {
 
-    func toggleBooleanOutcome() async throws -> OCKAnyOutcome {
+    public func toggleBooleanOutcome() async throws -> OCKAnyOutcome {
         try await store.toggleBooleanOutcome(for: result)
     }
 
-    func toggleBooleanOutcome(
+    public func toggleBooleanOutcome(
         completion: @escaping OCKResultClosure<OCKAnyOutcome> = { _ in }
     ) {
         store.toggleBooleanOutcome(for: result, completion: completion)
