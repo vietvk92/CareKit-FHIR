@@ -46,7 +46,10 @@ extension OCKStore {
         limit: Int?,
         completion: @escaping OCKResultClosure<[T]>)
         where T: OCKVersionedObjectCompatible {
-
+         
+        guard !context.persistentStoreCoordinator.persistentStores.isEmpty else {
+            throw OCKStoreError.invalidValue("The store has not been setup yet")
+        }
         context.perform {
             do {
                 let request = NSFetchRequest<OCKCDVersionedObject>(
@@ -76,7 +79,10 @@ extension OCKStore {
         preUpdateValidate: @escaping () throws -> Void = { },
         preSaveValidate: @escaping () throws -> Void = { },
         completion: @escaping OCKResultClosure<TransactionResult<T>>) {
-
+     
+        guard !context.persistentStoreCoordinator.persistentStores.isEmpty else {
+            throw OCKStoreError.invalidValue("The store has not been setup yet")
+        }
         context.perform {
             do {
                 try preInsertValidate()
