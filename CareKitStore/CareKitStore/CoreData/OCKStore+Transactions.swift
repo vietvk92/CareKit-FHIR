@@ -38,18 +38,21 @@ extension OCKStore {
         var updates: [T] = []
         var deletes: [T] = []
     }
-
+    
     func fetchValues<T>(
         predicate: NSPredicate,
         sortDescriptors: [NSSortDescriptor],
         offset: Int,
         limit: Int?,
         completion: @escaping OCKResultClosure<[T]>)
-        where T: OCKVersionedObjectCompatible {
-         
-        guard !context.persistentStoreCoordinator.persistentStores.isEmpty else {
-            throw OCKStoreError.invalidValue("The store has not been setup yet")
+    where T: OCKVersionedObjectCompatible {
+        
+        guard let persistentStores = context.persistentStoreCoordinator?.persistentStores,
+                !persistentStores.isEmpty else {
+            completion(.failure(.fetchFailed(reason: "The store has not been setup yet")))
+            return
         }
+        
         context.perform {
             do {
                 let request = NSFetchRequest<OCKCDVersionedObject>(
@@ -59,11 +62,11 @@ extension OCKStore {
                 request.fetchLimit = limit ?? 0
                 request.fetchOffset = offset
                 request.returnsObjectsAsFaults = false
-
+                
                 let fetched = try self.context.fetch(request)
-
+                
                 let values = fetched.map { $0.makeValue() as! T }
-
+                
                 completion(.success(values))
             } catch {
                 completion(.failure(.fetchFailed(reason: error.localizedDescription)))
@@ -79,53 +82,56 @@ extension OCKStore {
         preUpdateValidate: @escaping () throws -> Void = { },
         preSaveValidate: @escaping () throws -> Void = { },
         completion: @escaping OCKResultClosure<TransactionResult<T>>) {
-     
-        guard !context.persistentStoreCoordinator.persistentStores.isEmpty else {
-            throw OCKStoreError.invalidValue("The store has not been setup yet")
-        }
-        context.perform {
-            do {
-                try preInsertValidate()
-                var result = TransactionResult<T>()
-
-                // Perform inserts
-                if !inserts.isEmpty {
-                    try self.validateNew(inserts)
-                    result.inserts = inserts
-                        .map { $0.insert(context: self.context) }
-                        .map { $0.makeValue() as! T }
+            
+            guard let persistentStores = context.persistentStoreCoordinator?.persistentStores,
+                  !persistentStores.isEmpty else {
+                completion(.failure(.fetchFailed(reason: "The store has not been setup yet")))
+                return
+            }
+            
+            context.perform {
+                do {
+                    try preInsertValidate()
+                    var result = TransactionResult<T>()
+                    
+                    // Perform inserts
+                    if !inserts.isEmpty {
+                        try self.validateNew(inserts)
+                        result.inserts = inserts
+                            .map { $0.insert(context: self.context) }
+                            .map { $0.makeValue() as! T }
+                    }
+                    
+                    // Perform updates
+                    try preUpdateValidate()
+                    
+                    if !updates.isEmpty {
+                        try self.validateUpdates(updates)
+                        result.updates = try updates
+                            .map(self.updateValue)
+                            .map { $0.makeValue() as! T }
+                    }
+                    
+                    // Perform deletes
+                    if !deletes.isEmpty {
+                        result.deletes = try deletes
+                            .map(self.updateValue)
+                            .map { delete in
+                                delete.deletedDate = Date()
+                                return delete.makeValue() as! T
+                            }
+                    }
+                    
+                    try preSaveValidate()
+                    try self.context.save()
+                    completion(.success(result))
+                    
+                } catch {
+                    self.context.rollback()
+                    completion(.failure(.invalidValue(reason: error.localizedDescription)))
                 }
-
-                // Perform updates
-                try preUpdateValidate()
-                
-                if !updates.isEmpty {
-                    try self.validateUpdates(updates)
-                    result.updates = try updates
-                        .map(self.updateValue)
-                        .map { $0.makeValue() as! T }
-                }
-
-                // Perform deletes
-                if !deletes.isEmpty {
-                    result.deletes = try deletes
-                        .map(self.updateValue)
-                        .map { delete in
-                            delete.deletedDate = Date()
-                            return delete.makeValue() as! T
-                        }
-                }
-
-                try preSaveValidate()
-                try self.context.save()
-                completion(.success(result))
-
-            } catch {
-                self.context.rollback()
-                completion(.failure(.invalidValue(reason: error.localizedDescription)))
             }
         }
-    }
 
     @discardableResult
     func updateValue(_ value: OCKVersionedObjectCompatible) throws -> OCKCDVersionedObject {
