@@ -156,6 +156,30 @@ public extension InstructionsTaskView where Header == _InstructionsTaskViewHeade
     }
 }
 
+public extension InstructionsTaskView where Header == _CustomInstructionsTaskViewHeader {
+
+    /// Create an instance.
+    /// - Parameters:
+    ///   - title: Title to display in the header.
+    ///   - detail: Detail to display in the header.
+    ///   - instructions: Longer text displayed in the content of the view.
+    ///   - isComplete: True if the view denotes the completed state.
+    ///   - action: Action to perform when the completion button is tapped.
+    init(
+        title: Text,
+        detail: Text? = nil,
+        instructions: Text? = nil,
+        isComplete: Bool,
+        action: @escaping () -> Void,
+        headerAction: @escaping () -> Void
+    ) {
+        self.instructions = instructions
+        self.isComplete = isComplete
+        self.action = action
+        self.header = _CustomInstructionsTaskViewHeader(title: title, detail: detail, action: headerAction)
+    }
+}
+
 /// The default header used by a `InstructionsTaskView`.
 public struct _InstructionsTaskViewHeader: View {
 
@@ -175,6 +199,27 @@ public struct _InstructionsTaskViewHeader: View {
         }
     }
 }
+
+public struct _CustomInstructionsTaskViewHeader: View {
+
+    @Environment(\.careKitStyle)
+    private var style
+
+    fileprivate let title: Text
+    fileprivate let detail: Text?
+    var action: (() -> Void)?
+
+    public var body: some View {
+        VStack(
+            alignment: .leading,
+            spacing: style.dimension.directionalInsets1.top
+        ) {
+            CustomHeaderView(title: title, detail: detail, action: action)
+            Divider()
+        }
+    }
+}
+
 
 #if DEBUG
 struct InstructionsTaskView_Previews: PreviewProvider {

@@ -98,3 +98,55 @@ struct HeaderView_Previews: PreviewProvider {
     }
 }
 #endif
+
+public struct CustomHeaderView: View {
+
+    // MARK: - Properties
+
+    @Environment(\.careKitStyle) private var style
+
+    private let title: Text
+    private let detail: Text?
+    private let image: Image?
+    var action: (() -> Void)?
+
+    public var body: some View {
+        Button {
+            action?()
+        } label: {
+            HStack(spacing: style.dimension.directionalInsets2.trailing) {
+                image?
+                    .font(.largeTitle)
+                VStack(alignment: .leading, spacing: style.dimension.directionalInsets1.top / 4.0) {
+                    title
+                        .font(.headline)
+                        .fontWeight(.bold)
+                        // Allows multiline text to wrap to the next line
+                        .fixedSize(horizontal: false, vertical: true)
+                    detail?
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        // Allows multiline text to wrap to the next line
+                        .fixedSize(horizontal: false, vertical: true)
+                }.foregroundColor(Color.primary)
+                
+                Spacer()
+                Image(systemName: "chevron.right")
+            }
+        }
+    }
+
+    // MARK: - Init
+
+    /// Create an instance.
+    /// - Parameters:
+    ///   - title: The title text to display above the detail.
+    ///   - detail: The detail text to display below the title.
+    ///   - image: Detail image to display beside the text.
+    public init(title: Text, detail: Text? = nil, image: Image? = nil, action: (() -> Void)?) {
+        self.title = title
+        self.detail = detail
+        self.image = image
+        self.action = action
+    }
+}
