@@ -104,7 +104,7 @@ import UIKit
         super.styleDidChange()
         let cachedStyle = style()
         contentView.directionalLayoutMargins = cachedStyle.dimension.directionalInsets1
-        backgroundColor = .red //cachedStyle.color.customGroupedBackground
+        backgroundColor = cachedStyle.color.customGroupedBackground
         stackView.spacing = cachedStyle.dimension.directionalInsets1.top
     }
 }
