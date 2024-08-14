@@ -123,21 +123,27 @@ open class OCKListViewController: UIViewController {
     }
     
     open func heightOfContent() -> CGFloat {
+        // Ensure the entire view hierarchy is laid out
+        listView.layoutIfNeeded()
+        listView.stackView.layoutIfNeeded()
+        
         var totalHeight: CGFloat = 0.0
-
+        
         for subview in listView.stackView.arrangedSubviews {
-            let fittingSize = CGSize(width: listView.stackView.bounds.width, height: UIView.layoutFittingCompressedSize.height)
-            let size = subview.systemLayoutSizeFitting(fittingSize,
-                                                       withHorizontalFittingPriority: .required,
-                                                       verticalFittingPriority: .fittingSizeLevel)
-            totalHeight += size.height
+            // Force layout of each subview
+            subview.layoutIfNeeded()
+            
+            // Accumulate the height of each subview
+            totalHeight += subview.frame.height
         }
         
-        // Add stack view's spacing if needed
+        // Add the spacing between views if the stack view has spacing
         totalHeight += listView.stackView.spacing * CGFloat(listView.stackView.arrangedSubviews.count - 1)
-
+        
+        // Return the computed total height
         return totalHeight
     }
+
 
     open func updateStyle(_ style: OCKStyler) {
         listView.customStyle = style
