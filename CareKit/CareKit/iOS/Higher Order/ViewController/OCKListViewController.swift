@@ -126,9 +126,5 @@ open class OCKListViewController: UIViewController {
         listView.scrollView.layoutIfNeeded()
         return listView.scrollView.contentSize.height
     }
-    
-    open func updateBackground(_ color: UIColor) {
-        listView.backgroundColor = color
-    }
 }
 #endif
