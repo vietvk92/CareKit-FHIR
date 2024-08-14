@@ -33,7 +33,7 @@ import CareKitUI
 import UIKit
 
 /// A view enclosing a scrollable stack view.
-internal class OCKListView: OCKView {
+ class OCKListView: OCKView {
 
     override var backgroundColor: UIColor? {
         didSet {
