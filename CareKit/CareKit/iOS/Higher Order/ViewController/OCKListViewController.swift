@@ -118,7 +118,7 @@ open class OCKListViewController: UIViewController {
         children.forEach { $0.clearContainment() }
     }
     
-    open func allowScrolling(isAllow: Bool) {
+    open func allowScrolling(_ isAllow: Bool) {
         listView.scrollView.isScrollEnabled = isAllow
     }
 }
