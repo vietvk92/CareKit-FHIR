@@ -117,5 +117,9 @@ open class OCKListViewController: UIViewController {
         listView.stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         children.forEach { $0.clearContainment() }
     }
+    
+    open func allowScrolling(isAllow: Bool) {
+        listView.scrollView.isScrollEnabled = isAllow
+    }
 }
 #endif
