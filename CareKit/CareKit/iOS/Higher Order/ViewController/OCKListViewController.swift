@@ -121,5 +121,10 @@ open class OCKListViewController: UIViewController {
     open func allowScrolling(_ isAllow: Bool) {
         listView.scrollView.isScrollEnabled = isAllow
     }
+    
+    open func heightOfContent() -> CGFloat {
+        listView.scrollView.layoutIfNeeded()
+        return listView.scrollView.contentSize.height
+    }
 }
 #endif
