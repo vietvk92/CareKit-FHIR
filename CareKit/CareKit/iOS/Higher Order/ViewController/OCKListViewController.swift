@@ -127,21 +127,7 @@ open class OCKListViewController: UIViewController {
         listView.layoutIfNeeded()
         listView.stackView.layoutIfNeeded()
         
-        var totalHeight: CGFloat = 0.0
-        
-        for subview in listView.stackView.arrangedSubviews {
-            // Force layout of each subview
-            subview.layoutIfNeeded()
-            
-            // Accumulate the height of each subview
-            totalHeight += subview.frame.height
-        }
-        
-        // Add the spacing between views if the stack view has spacing
-        totalHeight += listView.stackView.spacing * CGFloat(listView.stackView.arrangedSubviews.count - 1)
-        
-        // Return the computed total height
-        return totalHeight
+        return listView.scrollView.contentSize.height
     }
 
 
