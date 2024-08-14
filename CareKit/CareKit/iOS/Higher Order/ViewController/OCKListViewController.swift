@@ -126,5 +126,9 @@ open class OCKListViewController: UIViewController {
         listView.scrollView.layoutIfNeeded()
         return listView.scrollView.contentSize.height
     }
+    
+    open func updateStyle(_ style: OCKStyler) {
+        listView.customStyle = style
+    }
 }
 #endif
